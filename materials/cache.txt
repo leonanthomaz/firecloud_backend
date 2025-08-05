@@ -1,0 +1,16 @@
+cached_data = await get_cached_company_context(self.cache_manager, session, company_id)
+
+if cached_data["company_data"]["chatbot_status"] in [ChatbotStatus.INACTIVE, ChatbotStatus.MAINTENANCE]:
+    raise HTTPException(status_code=502, detail="Chat Indisponível.")
+
+context = build_chat_context(
+    data=data,
+    chatbot=chatbot,
+    intents=intents,
+    selected_intent=selected_intent,
+    company_data=cached_data["company_data"],
+    assistant_data=cached_data["assistant_data"],
+    service_data=cached_data["service_data"],
+    schedule_data=cached_data["schedule_data"],
+    schedule_slots_data=cached_data["schedule_slots_data"],
+)

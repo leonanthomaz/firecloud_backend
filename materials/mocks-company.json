@@ -1,0 +1,73 @@
+[
+{
+  "name": "Tech Solutions Ltda",
+  "description": "Empresa especializada em soluções de IA para negócios",
+  "industry": "Tecnologia",
+  "addresses": [
+    {
+      "street": "Rua das Inovações",
+      "number": "123",
+      "complement": "Sala 45",
+      "neighborhood": "Tecnopolis",
+      "city": "São Paulo",
+      "state": "SP",
+      "zip_code": "01234-567",
+      "country": "Brasil",
+      "is_primary": true
+    }
+  ],
+  "cnpj": "12.345.678/0001-90",
+  "phone": "+55 11 98765-4321",
+  "website": "https://www.techsolutions.com.br",
+  "opening_time": "09:00:00",
+  "closing_time": "18:00:00",
+  "working_days": ["segunda", "terça", "quarta", "quinta", "sexta"],
+  "assistant_type": "chatbot",
+  "assistant_model": "gpt-3.5-turbo",
+  "ai_token": "sk_test_1234567890abcdef",
+  "status": "active",
+  "social_media_links": {
+    "facebook": "https://facebook.com/techsolutions",
+    "instagram": "https://instagram.com/techsolutions",
+    "linkedin": "https://linkedin.com/company/techsolutions"
+  },
+  "contact_email": "contato@techsolutions.com.br",
+  "business_type": "B2B"
+},
+{
+  "name": "Loja Estilo Único",
+  "description": "Moda casual e urbana para quem quer se destacar no dia a dia.",
+  "industry": "Varejo de Moda",
+  "addresses": [
+    {
+      "street": "Rua das Tendências",
+      "number": "456",
+      "complement": "Loja 08",
+      "neighborhood": "Centro Fashion",
+      "city": "Rio de Janeiro",
+      "state": "RJ",
+      "zip_code": "20000-000",
+      "country": "Brasil",
+      "is_primary": true
+    }
+  ],
+  "cnpj": "98.765.432/0001-10",
+  "phone": "+55 21 99888-7766",
+  "website": "https://www.estilounico.com.br",
+  "opening_time": "10:00:00",
+  "closing_time": "20:00:00",
+  "working_days": ["segunda", "terça", "quarta", "quinta", "sexta", "sábado"],
+  "assistant_type": "chatbot",
+  "assistant_model": "gpt-4",
+  "ai_token": "sk_test_abcdef9876543210",
+  "status": "active",
+  "social_media_links": {
+    "facebook": "https://facebook.com/estilounico",
+    "instagram": "https://instagram.com/estilounico",
+    "tiktok": "https://tiktok.com/@estilounico"
+  },
+  "contact_email": "contato@estilounico.com.br",
+  "business_type": "B2C"
+}
+
+]

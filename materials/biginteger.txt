@@ -1,0 +1,5 @@
+from sqlalchemy import BigInteger, Column
+from sqlmodel import Field
+
+assistant_token_limit: Optional[int] = Field(sa_column=Column(BigInteger))
+assistant_token_usage: Optional[int] = Field(default=0, sa_column=Column(BigInteger))
