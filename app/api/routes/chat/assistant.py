@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
@@ -6,7 +7,7 @@ from app.models.chat.assistant import Assistant
 from app.models.user.user import User
 from app.auth.auth import AuthRouter
 from app.database.connection import get_session
-from app.schemas.chat.assistant import AssistantRequest, AssistantResponse
+from app.schemas.chat.assistant import AssistantRequest, AssistantResponse, AssistantStatusUpdate
 
 db_session = get_session
 get_current_user = AuthRouter().get_current_user
@@ -20,6 +21,8 @@ class AssistantRouter(APIRouter):
         self.add_api_route("/assistants/{company_id}/{assistant_id}", self.get_assistant, methods=["GET"], response_model=AssistantResponse)
         self.add_api_route("/assistants/{company_id}/{assistant_id}", self.update_assistant, methods=["PUT"], response_model=AssistantResponse)
         self.add_api_route("/assistants/{company_id}/{assistant_id}", self.delete_assistant, methods=["DELETE"], response_model=dict)
+        self.add_api_route("/assistants/{company_id}/{assistant_id}/status", self.update_assistant_status, methods=["PATCH"], response_model=AssistantResponse)
+
 
     def get_assistant_by_company(self, company_id: int, session: Session = Depends(db_session)):
         # Verificar se a empresa existe
@@ -115,3 +118,37 @@ class AssistantRouter(APIRouter):
         session.delete(assistant)
         session.commit()
         return {"message": "Assistente deletada com sucesso"}
+    
+    def update_assistant_status(
+        self,
+        company_id: int,
+        assistant_id: int,
+        status_update: AssistantStatusUpdate,
+        current_user: User = Depends(get_current_user),
+        session: Session = Depends(db_session)
+    ):
+        # Verificar se a empresa existe
+        company = session.get(Company, company_id)
+        if not company:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Empresa não encontrada")
+
+        # Verificar se a assistente pertence à empresa
+        assistant = session.exec(
+            select(Assistant).where(
+                Assistant.id == assistant_id,
+                Assistant.company_id == company_id
+            )
+        ).first()
+
+        if not assistant:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Assistente não encontrada")
+
+        # Atualizar status
+        assistant.status = status_update.status
+        assistant.updated_at = datetime.now(timezone.utc)
+
+        session.add(assistant)
+        session.commit()
+        session.refresh(assistant)
+
+        return assistant

@@ -2,6 +2,8 @@ from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel
 
+from app.enums.assistant import AssistantStatus
+
 class AssistantRequest(BaseModel):
     company_id: int
     status: Optional[str] = None
@@ -23,3 +25,6 @@ class AssistantResponse(AssistantRequest):
 
     class Config:
         from_attributes = True
+
+class AssistantStatusUpdate(BaseModel):
+    status: AssistantStatus
