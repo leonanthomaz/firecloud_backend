@@ -15,7 +15,7 @@ def create_app():
     init_db()
 
     origins = (
-        ["https://firecloud.vercel.app", "https://firecloud-dashboard.vercel.app"]
+        ["https://firecloud.vercel.app", "https://firecloud-admin.vercel.app"]
         if configuration.environment == "production"
         else ["http://localhost:3000", "http://localhost:3001"]
     )
