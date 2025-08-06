@@ -50,7 +50,7 @@ def generate_company_code() -> str:
 def get_assistant_link(code: str) -> str:
     """Gera o link do assistente de IA com base no ambiente."""
     if configuration.environment == "production":
-        return f"https://firecloud-frontend.vercel.app/chat/company/{code}"
+        return f"https://firecloud.vercel.app/chat/company/{code}"
     else:
         return f"http://localhost:3000/chat/company/{code}"
 
@@ -92,7 +92,7 @@ def populate_company(session: Session):
         if configuration.environment == "development":
             assistant_link = f"http://localhost:3000/chat/company/{company_slug}/{company.code}"
         else:
-            assistant_link = f"=https://firecloud.vercel.app/chat/company/{company_slug}/{company.code}"
+            assistant_link = f"https://firecloud.vercel.app/chat/company/{company_slug}/{company.code}"
 
         assistant = Assistant(
             company_id=company.id,
