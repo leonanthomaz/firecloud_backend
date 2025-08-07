@@ -33,7 +33,7 @@ class AnalyticsRouter(APIRouter):
 
             metrics = self._calculate_metrics(interactions, assistant)
 
-            filename = f"relatorio_{company.name.replace(' ', '_')}_{datetime.now().strftime('%Y%m%d')}.pdf"
+            filename = f"analise-{company.name.lower().replace(' ', '-')}-{datetime.now().strftime('%d-%m-%Y')}.pdf"
 
             # Cria arquivo temporário
             with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
@@ -71,11 +71,15 @@ class AnalyticsRouter(APIRouter):
 
             # Retorna como FileResponse forçando o download
             return FileResponse(
-                tmp_path,
+                path=tmp_path,
                 media_type='application/pdf',
                 filename=filename,
-                headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+                headers={
+                    "Content-Disposition": f'inline; filename="{filename}"',
+                    "X-Filename": filename
+                }
             )
+
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Erro ao gerar relatório: {str(e)}")
