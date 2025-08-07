@@ -21,6 +21,7 @@ from app.api.routes.chat.chat import ChatRouter
 from app.api.routes.chat.assistant import AssistantRouter
 from app.api.routes.chat.interaction import InteractionRouter
 from app.api.routes.google.google_calendar import GoogleCalendarRouter
+from app.api.routes.analytics.analytics import AnalyticsRouter
 
 def register_routes(app):
     app.include_router(HomeRouter())
@@ -51,5 +52,7 @@ def register_routes(app):
     app.include_router(CreditRouter())
     app.include_router(FinanceCategoryRouter())
     app.include_router(FinanceRouter())
+    
+    app.include_router(AnalyticsRouter())
 
     app.include_router(GoogleCalendarRouter())
