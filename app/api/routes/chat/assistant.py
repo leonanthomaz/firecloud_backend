@@ -7,7 +7,7 @@ from app.models.chat.assistant import Assistant
 from app.models.user.user import User
 from app.auth.auth import AuthRouter
 from app.database.connection import get_session
-from app.schemas.chat.assistant import AssistantRequest, AssistantResponse, AssistantStatusUpdate
+from app.schemas.chat.assistant import AssistantRequest, AssistantResponse, AssistantStatusUpdate, AssistantUpdate
 
 db_session = get_session
 get_current_user = AuthRouter().get_current_user
@@ -84,7 +84,7 @@ class AssistantRouter(APIRouter):
         assistants = session.exec(select(Assistant).where(Assistant.company_id == company_id)).all()
         return assistants
 
-    def update_assistant(self, company_id: int, assistant_id: int, updated_assistant: AssistantRequest, current_user: User = Depends(get_current_user), session: Session = Depends(db_session)):
+    def update_assistant(self, company_id: int, assistant_id: int, updated_assistant: AssistantUpdate, current_user: User = Depends(get_current_user), session: Session = Depends(db_session)):
         # Verificar se a empresa existe
         company = session.get(Company, company_id)
         if not company:
