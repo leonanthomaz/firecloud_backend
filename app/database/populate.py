@@ -22,6 +22,7 @@ def populate_database(session: Session):
     populate_plan_pre_pago(session)
     populate_plan_mensais(session)
     populate_credits(session)
+    populate_test_users(session)
 
 def get_or_create_company(session: Session, company_data: dict) -> Company:
     """Obtém uma empresa existente ou cria uma nova."""
@@ -315,3 +316,90 @@ def populate_plan_mensais(session: Session):
 def hash_password(password: str) -> str:
     """Gera um hash da senha usando bcrypt."""
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+def populate_test_users(session: Session):
+    """Cria usuários de teste variados para FireCloud."""
+    company = session.exec(select(Company).where(Company.name == "FireCloud")).first()
+    if not company:
+        return
+
+    users = [
+        {
+            "name": "Admin Geral",
+            "username": "admin@firecloud.com",
+            "email": "admin@firecloud.com",
+            "password": "admin456",
+            "role": "admin",
+            "is_admin": True,
+        },
+        {
+            "name": "Empresa Mensal",
+            "username": "empresa_plano@exemplo.com",
+            "email": "empresa_plano@exemplo.com",
+            "password": "empresa_plano123",
+            "role": "empresa",
+            "is_admin": False,
+        },
+        {
+            "name": "Empresa Pré-Pago",
+            "username": "empresa_credito@exemplo.com",
+            "email": "empresa_credito@exemplo.com",
+            "password": "empresa_credito123",
+            "role": "empresa",
+            "is_admin": False,
+        },
+        {
+            "name": "Cliente Teste",
+            "username": "cliente_teste@exemplo.com",
+            "email": "cliente_teste@exemplo.com",
+            "password": "cliente123",
+            "role": "cliente",
+            "is_admin": False,
+        },
+        # Usuário “criativo” extra
+        {
+            "name": "Bot de Vendas",
+            "username": "bot_vendas@firecloud.com",
+            "email": "bot_vendas@firecloud.com",
+            "password": "bot1234",
+            "role": "assistant",
+            "is_admin": False,
+        },
+    ]
+
+    for u in users:
+        existing = session.exec(select(User).where(User.username == u["username"])).first()
+        if not existing:
+            user_data = {
+                "name": u["name"],
+                "username": u["username"],
+                "email": u["email"],
+                "company_id": company.id,
+                "password_hash": hash_password(u["password"]),
+                "is_admin": u.get("is_admin", False),
+                "role": u["role"],
+                "is_active": True,
+            }
+            user = User(**user_data)
+            session.add(user)
+            session.commit()
+            session.refresh(user)
+
+            # Criar endereço fictício
+            address_data = Address(
+                user_id=user.id,
+                company_id=company.id,
+                street="Rua Teste",
+                number="100",
+                complement="Apto",
+                neighborhood="Centro",
+                reference="Perto do café",
+                city="Rio de Janeiro",
+                state="RJ",
+                zip_code="20000-000",
+                is_company_address=u["role"] != "cliente",
+                is_main_address=True,
+                is_home_address=u["role"] == "cliente"
+            )
+            session.add(address_data)
+            session.commit()
