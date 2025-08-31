@@ -153,11 +153,12 @@ def populate_admin_user(session: Session):
             session.commit()
             
 def populate_extra_admins(session: Session):
-    """Popula usuários admins extras, se não existirem."""
+    """Popula usuários admins extras com endereço, se não existirem."""
     company = session.exec(select(Company).where(Company.name == "FireCloud")).first()
     if not company:
         return
 
+    password_hash = hash_password("admin_sys123")
     admins = [
         {
             "name": "Leonardo",
@@ -165,7 +166,8 @@ def populate_extra_admins(session: Session):
             "last_name": "Oliveira",
             "username": "admin_sys",
             "email": "admin_sys@firecloud.com",
-            "password": "admin_sys123",
+            "password": password_hash,
+            "company_id": company.id,
         },
     ]
 
@@ -180,8 +182,30 @@ def populate_extra_admins(session: Session):
             "company_id": company.id,
             "is_admin": True,
         }
-        get_or_create_user(session, user_data)
+        user = get_or_create_user(session, user_data)
 
+        # Criar endereço se não existir
+        existing_address = session.exec(
+            select(Address).where(Address.user_id == user.id)
+        ).first()
+        if not existing_address:
+            address_data = Address(
+                user_id=user.id,
+                company_id=company.id,
+                street="Estrada do Tijuaçu",
+                number="17",
+                complement="B",
+                neighborhood="Alto da Boa Vista",
+                reference="Próximo a Farmácia",
+                city="Rio de Janeiro",
+                state="RJ",
+                zip_code="20531-390",
+                is_company_address=True,
+                is_main_address=True,
+                is_home_address=False
+            )
+            session.add(address_data)
+            session.commit()
             
 def populate_plan_pre_pago(session: Session):
     """Cria o plano pré-pago se não existir."""
