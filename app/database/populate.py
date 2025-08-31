@@ -19,6 +19,7 @@ def populate_database(session: Session):
     """Inicializa o banco de dados e popula com dados iniciais."""
     populate_company(session)
     populate_admin_user(session)
+    populate_extra_admins(session)
     populate_plan_pre_pago(session)
     populate_plan_mensais(session)
     populate_credits(session)
