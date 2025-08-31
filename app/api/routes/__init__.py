@@ -1,4 +1,5 @@
 from app.auth.auth import AuthRouter
+from app.api.routes.admin.lab import LabRouter
 from app.api.routes.company.home import HomeRouter
 from app.api.routes.admin.users import AdminRouter
 from app.api.routes.company.company import CompanyRouter
@@ -27,6 +28,8 @@ def register_routes(app):
     app.include_router(HomeRouter())
 
     app.include_router(AuthRouter())
+    app.include_router(LabRouter())
+    
     app.include_router(AdminRouter())
     app.include_router(UserRouter())
     app.include_router(CompanyRouter())

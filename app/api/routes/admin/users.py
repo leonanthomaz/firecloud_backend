@@ -4,7 +4,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from typing import List
 from app.configuration.settings import Configuration
-from app.database.populate import populate_test_users
 from app.models.user.user import User
 from app.schemas.auth.auth import AuthRequestCreate, AuthRequestUpdate
 from app.auth.auth import AuthRouter
@@ -23,9 +22,6 @@ class AdminRouter(APIRouter):
         self.add_api_route("/recent-users", self.get_recent_users, methods=["GET"], response_model=dict)
         self.add_api_route("/users/{company_id}", self.update_user, methods=["PUT"], response_model=User)
         self.add_api_route("/users/{company_id}", self.delete_user, methods=["DELETE"], response_model=dict)
-        
-        self.add_api_route("/populate-test-users", self.populate_users, methods=["POST"])
-
 
     def list_users(self, current_user: User = Depends(get_current_user), session: Session = Depends(db_session)):
         is_admin(current_user)
@@ -123,7 +119,3 @@ class AdminRouter(APIRouter):
         }
         
 
-    def populate_users(self, session: Session = Depends(db_session)):            
-            # Popula os usuários de teste
-            populate_test_users(session)
-            return {"status": "ok", "message": "Test users adicionados"}
