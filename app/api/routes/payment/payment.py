@@ -35,9 +35,11 @@ class PaymentRouter(APIRouter):
                 
         self.add_api_route("/payments/{payment_id}", self.get_payment_by_id, methods=["GET"], response_model=PaymentResponse)
         self.add_api_route("/payments/{payment_id}", self.update_payment, methods=["PUT"], response_model=PaymentResponse)
-        
+        self.add_api_route("/payments/{payment_id}", self.delete_payment, methods=["DELETE"])
+
         self.add_api_route("/payments/status/{transaction_code}", self.check_payment_status, methods=["GET"])
         self.add_api_route("/payments/company/{company_id}", self.get_payments_by_company, methods=["GET"], response_model=List[PaymentResponse])
+
 
     async def list_payments(self, session: Session = Depends(db_session)):
         """Lista todos os pagamentos"""
@@ -326,3 +328,40 @@ class PaymentRouter(APIRouter):
         except Exception as e:
             logging.error(f"Erro ao monitorar pagamento: {e}")
             raise HTTPException(status_code=500, detail="Erro interno")
+        
+    async def delete_payment(self, payment_id: int, session: Session = Depends(db_session)):
+        """Deleta um pagamento existente"""
+        try:
+            logging.info(f"Iniciando exclusão do pagamento {payment_id}")
+
+            payment = session.get(Payment, payment_id)
+            if not payment:
+                logging.error(f"Pagamento não encontrado: {payment_id}")
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Pagamento não encontrado"
+                )
+
+            # Só permite deletar pagamentos pendentes ou inválidos, não pagos
+            if payment.status == PaymentStatus.PAID:
+                logging.warning(f"Tentativa de deletar pagamento já pago: {payment_id}")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Não é possível deletar um pagamento já confirmado"
+                )
+
+            session.delete(payment)
+            session.commit()
+            logging.info(f"Pagamento {payment_id} deletado com sucesso")
+
+            return {"detail": "Pagamento deletado com sucesso"}
+
+        except HTTPException:
+            raise
+        except Exception as e:
+            logging.error(f"Erro ao deletar pagamento {payment_id}: {str(e)}", exc_info=True)
+            session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno ao deletar pagamento"
+            )
