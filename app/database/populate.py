@@ -151,6 +151,37 @@ def populate_admin_user(session: Session):
             session.add(address_data)
             session.commit()
             
+def populate_extra_admins(session: Session):
+    """Popula usuários admins extras, se não existirem."""
+    company = session.exec(select(Company).where(Company.name == "FireCloud")).first()
+    if not company:
+        return
+
+    admins = [
+        {
+            "name": "Leonardo",
+            "first_name": "Leonardo",
+            "last_name": "Oliveira",
+            "username": "admin_sys",
+            "email": "admin_sys@firecloud.com",
+            "password": "admin_sys123",
+        },
+    ]
+
+    for a in admins:
+        user_data = {
+            "name": a["name"],
+            "first_name": a["first_name"],
+            "last_name": a["last_name"],
+            "username": a["username"],
+            "email": a["email"],
+            "password_hash": hash_password(a["password"]),
+            "company_id": company.id,
+            "is_admin": True,
+        }
+        get_or_create_user(session, user_data)
+
+            
 def populate_plan_pre_pago(session: Session):
     """Cria o plano pré-pago se não existir."""
 
