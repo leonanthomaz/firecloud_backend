@@ -7,6 +7,8 @@ from app.tasks.websockets import routes as websocket_routes
 from app.api.routes import register_routes
 
 configuration = Configuration()
+logging.info(f"AMBIENTE URL: >>> {str(configuration.base_url)}")
+
 
 def create_app():
     app = FastAPI()
@@ -15,9 +17,9 @@ def create_app():
     init_db()
 
     origins = (
-        ["https://firecloud.vercel.app", "https://firecloud-admin.vercel.app"]
+        ["https://firecloud.vercel.app", "https://firecloud-admin.vercel.app", "https://sandbox-gv21.onrender.com", "https://leonanthomaz-sanbox.vercel.app"]
         if configuration.environment == "production"
-        else ["http://localhost:3000", "http://localhost:3001"]
+        else ["http://localhost:3000", "http://localhost:3001", "http://localhost:5173","http://localhost:5000"]
     )
 
     app.add_middleware(
