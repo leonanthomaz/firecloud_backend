@@ -41,12 +41,16 @@ class ChatRouter(APIRouter):
     async def chat(self, company_id: int, data: ChatRequest, session: Session = Depends(db_session)) -> Response:
         logging.info(f"DADOS DA REQUISIÇÃO: >>> {data}")
         try:
-            chatbot = get_or_create_chat(
-                session=session,
-                company_id=company_id,
-                whatsapp_id=data.whatsapp_id,
-                chat_code=data.chat_code
-            ) 
+            try:
+                chatbot = get_or_create_chat(
+                    session=session,
+                    company_id=company_id,
+                    whatsapp_id=data.whatsapp_id,
+                    chat_code=data.chat_code
+                )
+            except Exception as e:
+                logging.exception(f"Erro ao criar ou buscar chat: {e}")
+                raise
             context = chatbot.context_json
             logging.info(f"CHAT >>> Chat carregado/criado: {context}")
                                
